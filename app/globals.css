@@ -1,0 +1,12 @@
+@import "tailwindcss";
+:root{--bg:#f4f1ea;--fg:#141412;--mute:#5f5c55;--line:#d9d4c8;--card:#ebe7dd;--acc:#b8452f;--accfg:#ffffff}
+@media (prefers-color-scheme:dark){:root{--bg:#141412;--fg:#f1ede4;--mute:#a5a198;--line:#2e2c28;--card:#1d1c19;--acc:#e0694f;--accfg:#141412}}
+@theme inline{
+  --color-bg:var(--bg);--color-fg:var(--fg);--color-mute:var(--mute);--color-line:var(--line);--color-card:var(--card);--color-acc:var(--acc);--color-accfg:var(--accfg);
+  --font-display:Fraunces,Georgia,"Times New Roman",serif;
+  --font-sans:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@utility wrap{margin-inline:auto;width:100%;max-width:1180px;padding-inline:1.5rem}
+html{scroll-padding-top:env(safe-area-inset-top)}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-sans);font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
