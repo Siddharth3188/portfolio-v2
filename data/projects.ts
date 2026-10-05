@@ -1,4 +1,3 @@
-```ts
 import type { Project, ProjectImage } from "./types";
 
 const img = (dir: string, file: string, alt: string): ProjectImage => ({
