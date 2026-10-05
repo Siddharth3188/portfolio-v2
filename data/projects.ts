@@ -65,4 +65,3 @@ export const getProject = (slug: string): Project => {
 };
 
 export const projectHref = (p: Project) => `/work/${p.slug}`;
-```
