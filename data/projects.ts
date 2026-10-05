@@ -1,6 +1,13 @@
+```ts
 import type { Project, ProjectImage } from "./types";
-const img = (dir: string, file: string, alt: string): ProjectImage => ({ src: `/images/portfolio/${dir}/${file}.svg`, alt, width: 1600, height: 1000 });
-// Swap the .svg placeholders for real screenshots (e.g. featured.webp) and update `img` above.
+
+const img = (dir: string, file: string, alt: string): ProjectImage => ({
+  src: `/images/portfolio/${dir}/${file}.jpg`,
+  alt,
+  width: 1600,
+  height: 1000,
+});
+
 export const projects: Project[] = [
   {
     slug: "bytezone",
@@ -15,8 +22,8 @@ export const projects: Project[] = [
     considerations: ["Clear service descriptions", "Easy ways to enquire", "Responsive layout across devices"],
     technologies: [], // TODO: list only what the deployed demo actually uses
     liveUrl: "", // TODO: add deployed demo URL
-    featuredImage: img("bytezone", "featured", "ByteZone Computers website preview (placeholder)"),
-    gallery: [img("bytezone", "gallery-1", "ByteZone Computers screen 1 (placeholder)"), img("bytezone", "gallery-2", "ByteZone Computers screen 2 (placeholder)")],
+    featuredImage: img("bytezone", "featured", "ByteZone Computers website preview"),
+    gallery: [img("bytezone", "gallery-1", "ByteZone Computers screen 1"), img("bytezone", "gallery-2", "ByteZone Computers screen 2")],
   },
   {
     slug: "sakthi-sudar-foundation",
@@ -31,8 +38,8 @@ export const projects: Project[] = [
     considerations: ["A large amount of organizational content", "Clear navigation hierarchy", "Gallery and team sections"],
     technologies: [],
     liveUrl: "",
-    featuredImage: img("ssf", "featured", "Sakthi Sudar Foundation website preview (placeholder)"),
-    gallery: [img("ssf", "gallery-1", "Sakthi Sudar Foundation screen 1 (placeholder)"), img("ssf", "gallery-2", "Sakthi Sudar Foundation screen 2 (placeholder)")],
+    featuredImage: img("ssf", "featured", "Sakthi Sudar Foundation website preview"),
+    gallery: [img("ssf", "gallery-1", "Sakthi Sudar Foundation screen 1"), img("ssf", "gallery-2", "Sakthi Sudar Foundation screen 2")],
   },
   {
     slug: "atelier",
@@ -47,13 +54,16 @@ export const projects: Project[] = [
     considerations: ["Image-led presentation", "Typographic hierarchy", "Project detail storytelling"],
     technologies: [],
     liveUrl: "",
-    featuredImage: img("atelier", "featured", "Atelier website preview (placeholder)"),
-    gallery: [img("atelier", "gallery-1", "Atelier screen 1 (placeholder)"), img("atelier", "gallery-2", "Atelier screen 2 (placeholder)")],
+    featuredImage: img("atelier", "featured", "Atelier website preview"),
+    gallery: [img("atelier", "gallery-1", "Atelier screen 1"), img("atelier", "gallery-2", "Atelier screen 2")],
   },
 ];
+
 export const getProject = (slug: string): Project => {
   const p = projects.find((x) => x.slug === slug);
   if (!p) throw new Error(`Unknown project: ${slug}`);
   return p;
 };
+
 export const projectHref = (p: Project) => `/work/${p.slug}`;
+```
