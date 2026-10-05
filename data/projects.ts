@@ -20,7 +20,7 @@ export const projects: Project[] = [
     highlights: ["Home", "Services", "About", "Contact", "Responsive design"],
     considerations: ["Clear service descriptions", "Easy ways to enquire", "Responsive layout across devices"],
     technologies: [], // TODO: list only what the deployed demo actually uses
-    liveUrl: "", // TODO: add deployed demo URL
+    liveUrl: "https://bytezone-computers.vercel.app/", // TODO: add deployed demo URL
     featuredImage: img("bytezone", "featured", "ByteZone Computers website preview"),
     gallery: [img("bytezone", "gallery-1", "ByteZone Computers screen 1"), img("bytezone", "gallery-2", "ByteZone Computers screen 2")],
   },
@@ -36,7 +36,7 @@ export const projects: Project[] = [
     highlights: ["Homepage", "Programs", "Objectives", "Gallery", "Team", "Contact", "Organizational content"],
     considerations: ["A large amount of organizational content", "Clear navigation hierarchy", "Gallery and team sections"],
     technologies: [],
-    liveUrl: "",
+    liveUrl: "https://www.sakthisudarfoundation.org/",
     featuredImage: img("ssf", "featured", "Sakthi Sudar Foundation website preview"),
     gallery: [img("ssf", "gallery-1", "Sakthi Sudar Foundation screen 1"), img("ssf", "gallery-2", "Sakthi Sudar Foundation screen 2")],
   },
@@ -52,7 +52,7 @@ export const projects: Project[] = [
     highlights: ["Homepage", "Projects", "Project detail", "Studio", "Services", "Journal", "Contact"],
     considerations: ["Image-led presentation", "Typographic hierarchy", "Project detail storytelling"],
     technologies: [],
-    liveUrl: "",
+    liveUrl: "https://atelier-v3.vercel.app/",
     featuredImage: img("atelier", "featured", "Atelier website preview"),
     gallery: [img("atelier", "gallery-1", "Atelier screen 1"), img("atelier", "gallery-2", "Atelier screen 2")],
   },
