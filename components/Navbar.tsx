@@ -20,7 +20,9 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-bg/90 backdrop-blur">
       <div className="wrap flex h-[68px] items-center justify-between">
-        <Link href="/" className="font-display text-lg tracking-[0.2em]">SIDDHARTH</Link>
+        <Link href="/" className="flex items-center gap-2.5 font-display text-lg tracking-[0.2em]">
+          <img src="/siddharth-logo-typing.svg" alt="" aria-hidden="true" className="h-7 w-7 shrink-0 object-contain" />SIDDHARTH
+        </Link>
         <nav aria-label="Primary" className="hidden items-center gap-7 md:flex">
           {nav.map((n) => <Link key={n.href} href={n.href} aria-current={isActive(n.href) ? "page" : undefined} className={link(n.href)}>{n.label}</Link>)}
           <Link href="/contact" className="rounded-full bg-acc px-5 py-2.5 text-[14.5px] font-semibold text-accfg">Contact</Link>
