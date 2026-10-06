@@ -1,6 +1,5 @@
 "use client";
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import { contact } from "@/data/contact";
 
 type Fields = { name: string; business: string; email: string; phone: string; type: string; message: string };
 type Errors = Partial<Record<keyof Fields, string>>;
@@ -19,18 +18,24 @@ function validate(v: Fields): Errors {
 export default function ContactForm() {
   const [v, setV] = useState<Fields>(empty);
   const [errors, setErrors] = useState<Errors>({});
-  const [status, setStatus] = useState<"idle" | "loading" | "done">("idle");
+  const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
   const set = (k: keyof Fields) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => setV((p) => ({ ...p, [k]: e.target.value }));
 
-  function onSubmit(e: FormEvent) {
+  async function onSubmit(e: FormEvent) {
     e.preventDefault();
+    if (status === "loading") return;
     const found = validate(v);
     setErrors(found);
     if (Object.keys(found).length) return;
     setStatus("loading");
-    const body = `Name: ${v.name}\nBusiness: ${v.business}\nPhone/WhatsApp: ${v.phone}\nWebsite type: ${v.type}\n\n${v.message}`;
-    const href = `mailto:${contact.email}?subject=${encodeURIComponent("Project enquiry from " + v.name)}&body=${encodeURIComponent(body)}`;
-    window.setTimeout(() => { window.location.href = href; setStatus("done"); }, 400);
+    try {
+      const res = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(v) });
+      if (!res.ok) throw new Error(String(res.status));
+      setV(empty);
+      setStatus("done");
+    } catch {
+      setStatus("error");
+    }
   }
 
   const field = (id: keyof Fields, label: string, el: React.ReactNode) => (
@@ -56,11 +61,14 @@ export default function ContactForm() {
       {field("message", "Tell me about your project", <textarea {...aria("message")} rows={5} value={v.message} onChange={set("message")} required className={input} />)}
       <div>
         <button type="submit" disabled={status === "loading"} className="rounded-full bg-acc px-7 py-3.5 text-[14.5px] font-semibold tracking-wide text-accfg transition hover:-translate-y-0.5 disabled:opacity-60">
-          {status === "loading" ? "Opening your email app…" : "Start a conversation →"}
+          {status === "loading" ? "Sending..." : "Start a conversation →"}
         </button>
       </div>
       <div role="status" aria-live="polite">
-        {status === "done" && <p className="rounded-lg border border-acc p-4 text-[15px]">Nothing has been sent to a server. Your email app should now open with a draft addressed to {contact.email}. If it did not, use the email or WhatsApp links below.</p>}
+        {status === "done" && <p className="rounded-lg border border-acc p-4 text-[15px]">Thanks — your message has been sent. I&apos;ll get back to you soon.</p>}
+      </div>
+      <div role="alert">
+        {status === "error" && <p className="rounded-lg border border-acc p-4 text-[15px]">Something went wrong. Please try again.</p>}
       </div>
     </form>
   );
