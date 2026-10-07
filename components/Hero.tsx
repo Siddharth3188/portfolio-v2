@@ -21,7 +21,7 @@ export default function Hero() {
           </div>
         </Reveal>
         <Reveal delay={0.15} className="mt-14">
-          <Link href={projectHref(feature)} className="group block overflow-hidden rounded-lg border border-line bg-card" aria-label={`View ${feature.title}`}>
+          <Link href={projectHref(feature)} data-frame="" className="group block overflow-hidden rounded-lg border border-line bg-card" aria-label={`View ${feature.title}`}>
             <ProjectImage image={feature.featuredImage} priority sizes="(min-width:1180px) 1132px, 100vw" className="transition duration-700 group-hover:scale-[1.02]" />
           </Link>
           <p className="mt-3 text-sm text-mute">{feature.title} · {feature.status}</p>
