@@ -8,8 +8,8 @@ export default function ProjectCard({ project, flip, detailed }: { project: Proj
   const href = projectHref(project);
   return (
     <Reveal>
-      <article className={`grid items-center gap-6 border-t border-line py-12 md:gap-12 ${flip ? "md:grid-cols-[1fr_1.3fr]" : "md:grid-cols-[1.3fr_1fr]"}`}>
-        <Link href={href} aria-label={`View ${project.title}`} className={`group block overflow-hidden rounded-lg border border-line bg-card ${flip ? "md:order-2" : ""}`}>
+      <article data-card="" className={`grid items-center gap-6 border-t border-line py-12 md:gap-12 ${flip ? "md:grid-cols-[1fr_1.3fr]" : "md:grid-cols-[1.3fr_1fr]"}`}>
+        <Link href={href} aria-label={`View ${project.title}`} data-frame="" className={`group block overflow-hidden rounded-lg border border-line bg-card ${flip ? "md:order-2" : ""}`}>
           <ProjectImage image={project.featuredImage} className="transition duration-500 group-hover:scale-[1.03]" />
         </Link>
         <div>
