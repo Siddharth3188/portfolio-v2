@@ -7,7 +7,7 @@ import Reveal from "./Reveal";
 export default function Hero() {
   const feature = getProject("atelier");
   return (
-    <section className="pb-16 pt-16 md:pt-24">
+    <section data-hero="" className="pb-16 pt-16 md:pt-24">
       <div className="wrap">
         <Reveal><p className="text-[12.5px] font-medium uppercase tracking-[0.14em] text-mute">Web design · Development · Digital experiences</p></Reveal>
         <Reveal delay={0.05}>
