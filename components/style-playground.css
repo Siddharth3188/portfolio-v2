@@ -1,0 +1,61 @@
+/*
+ * Style Playground tokens. Everything is keyed on data-sp-* attributes that are only ever
+ * present on <html> while the visitor is on /process and has chosen a style. With no
+ * attributes, none of these rules match and the site is exactly the default design.
+ * Scopes: html (live page), [data-sp-preview] (preset cards), [data-sp-swatch] (accent chips),
+ * [data-sp-typeprev] (typography samples).
+ */
+
+/* ---- Accent (light/dark variants keep contrast on any palette) ---- */
+:is(html,[data-sp-preview],[data-sp-swatch])[data-sp-accent="terracotta"]{--sp-a-l:#b8452f;--sp-a-d:#e0694f}
+:is(html,[data-sp-preview],[data-sp-swatch])[data-sp-accent="violet"]{--sp-a-l:#6d4fd1;--sp-a-d:#a78bfa}
+:is(html,[data-sp-preview],[data-sp-swatch])[data-sp-accent="emerald"]{--sp-a-l:#0f7b57;--sp-a-d:#34d399}
+:is(html,[data-sp-preview],[data-sp-swatch])[data-sp-accent="cyan"]{--sp-a-l:#0b7a96;--sp-a-d:#22d3ee}
+:is(html,[data-sp-preview],[data-sp-swatch])[data-sp-accent="gold"]{--sp-a-l:#946500;--sp-a-d:#e5b64a}
+:is(html,[data-sp-preview],[data-sp-swatch])[data-sp-tone="light"]{--acc:var(--sp-a-l);--accfg:#ffffff}
+:is(html,[data-sp-preview],[data-sp-swatch])[data-sp-tone="dark"]{--acc:var(--sp-a-d);--accfg:#141412}
+:is(html,[data-sp-preview],[data-sp-swatch])[data-sp-tone="system"]{--acc:var(--sp-a-l);--accfg:#ffffff}
+@media (prefers-color-scheme:dark){
+  :is(html,[data-sp-preview],[data-sp-swatch])[data-sp-tone="system"]{--acc:var(--sp-a-d);--accfg:#141412}
+}
+
+/* ---- Palettes (the existing default is restated so its preview card is always accurate) ---- */
+html[data-sp-preset="current"],[data-sp-preview="current"]{--bg:#f4f1ea;--fg:#141412;--mute:#5f5c55;--line:#d9d4c8;--card:#ebe7dd}
+@media (prefers-color-scheme:dark){html[data-sp-preset="current"],[data-sp-preview="current"]{--bg:#141412;--fg:#f1ede4;--mute:#a5a198;--line:#2e2c28;--card:#1d1c19}}
+html[data-sp-preset="minimal"],[data-sp-preview="minimal"]{--bg:#fafaf9;--fg:#151515;--mute:#595959;--line:#e5e5e2;--card:#f1f1ef}
+html[data-sp-preset="editorial"],[data-sp-preview="editorial"]{--bg:#f5efe3;--fg:#1c1812;--mute:#5a5146;--line:#d6ccb8;--card:#ebe2cf}
+html[data-sp-preset="glass"],[data-sp-preview="glass"]{--bg:#e8ecf3;--fg:#0e1624;--mute:#46536a;--line:#c9d2e0;--card:#f4f7fb;--sp-shadow:0 12px 32px -14px rgba(15,23,34,.22);--sp-backdrop:radial-gradient(900px 520px at 10% -10%,rgba(139,92,246,.14),transparent 65%),radial-gradient(800px 520px at 100% 25%,rgba(14,165,233,.12),transparent 65%)}
+html[data-sp-preset="midnight"],[data-sp-preview="midnight"]{--bg:#0b0d12;--fg:#eceef3;--mute:#9aa1b2;--line:#232733;--card:#141824}
+html[data-sp-preset="cyber"],[data-sp-preview="cyber"]{--bg:#07090d;--fg:#e6f1f5;--mute:#8fa3ad;--line:#16303a;--card:#0c141b;--sp-shadow:0 0 0 1px color-mix(in srgb,var(--acc) 28%,transparent),0 0 26px color-mix(in srgb,var(--acc) 14%,transparent);--sp-backdrop:radial-gradient(700px 420px at 92% -5%,color-mix(in srgb,var(--acc) 14%,transparent),transparent 70%),radial-gradient(640px 420px at 0% 100%,rgba(139,92,246,.12),transparent 70%)}
+html[data-sp-preset="midnight"],html[data-sp-preset="cyber"]{color-scheme:dark}
+html[data-sp-preset="minimal"],html[data-sp-preset="editorial"],html[data-sp-preset="glass"]{color-scheme:light}
+html[data-sp-preset] body{background-image:var(--sp-backdrop,none);background-attachment:fixed}
+
+/* ---- Surface: components opt in with data-panels / data-panel ---- */
+html[data-sp-surface="solid"]{--sp-panel-bg:var(--card);--sp-panel-border:transparent;--sp-panel-blur:0px}
+html[data-sp-surface="border"]{--sp-panel-bg:transparent;--sp-panel-border:var(--line);--sp-panel-blur:0px}
+html[data-sp-surface="glass"]{--sp-panel-bg:color-mix(in srgb,var(--bg) 55%,transparent);--sp-panel-border:color-mix(in srgb,var(--fg) 13%,transparent);--sp-panel-blur:14px}
+html[data-sp-surface]:not([data-sp-surface="default"]) [data-panels]{background:transparent;border:0;gap:1rem}
+html[data-sp-surface]:not([data-sp-surface="default"]) [data-panel]{background:var(--sp-panel-bg);border:1px solid var(--sp-panel-border);border-radius:var(--radius-lg);box-shadow:var(--sp-shadow,none);-webkit-backdrop-filter:blur(var(--sp-panel-blur));backdrop-filter:blur(var(--sp-panel-blur))}
+
+/* ---- Corner radius (cards via theme radius tokens, buttons inside <main> only) ---- */
+html[data-sp-radius="sharp"]{--radius-sm:0;--radius-md:0;--radius-lg:0;--radius-xl:0;--sp-btn-radius:0}
+html[data-sp-radius="subtle"]{--radius-sm:.125rem;--radius-md:.25rem;--radius-lg:.375rem;--radius-xl:.5rem;--sp-btn-radius:.375rem}
+html[data-sp-radius="balanced"]{--radius-sm:.25rem;--radius-md:.375rem;--radius-lg:.5rem;--radius-xl:.75rem;--sp-btn-radius:9999px}
+html[data-sp-radius="rounded"]{--radius-sm:.5rem;--radius-md:.75rem;--radius-lg:1.25rem;--radius-xl:1.5rem;--sp-btn-radius:9999px}
+html[data-sp-radius] main .rounded-full{border-radius:var(--sp-btn-radius)}
+
+/* ---- Typography: system/available fonts only; navbar and footer stay on the brand type ---- */
+:is(html,[data-sp-typeprev])[data-sp-type="current"]{--sp-fd:Fraunces,Georgia,"Times New Roman",serif;--sp-fb:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+:is(html,[data-sp-typeprev])[data-sp-type="sans"]{--sp-fd:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--sp-fb:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+:is(html,[data-sp-typeprev])[data-sp-type="editorial"]{--sp-fd:Georgia,"Times New Roman",serif;--sp-fb:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif}
+:is(html,[data-sp-typeprev])[data-sp-type="technical"]{--sp-fd:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--sp-fb:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+html[data-sp-type] main{font-family:var(--sp-fb)}
+html[data-sp-type] main .font-display{font-family:var(--sp-fd);overflow-wrap:anywhere}
+html[data-sp-type="sans"] main .font-display{font-weight:500;letter-spacing:-.03em}
+html[data-sp-type="technical"] main .font-display{letter-spacing:-.06em}
+[data-sp-typeprev]{font-family:var(--sp-fd)}
+
+/* ---- Gentle transitions (disabled for reduced motion) ---- */
+html[data-sp-preset] body,html[data-sp-preset] [data-panel]{transition:background-color .3s ease,color .3s ease,border-color .3s ease}
+@media (prefers-reduced-motion:reduce){html[data-sp-preset] body,html[data-sp-preset] [data-panel]{transition:none}}
