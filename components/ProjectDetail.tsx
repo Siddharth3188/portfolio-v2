@@ -30,7 +30,7 @@ export default function ProjectDetail({ project }: { project: Project }) {
             )}
           </div>
           <Reveal className="mt-12">
-            <div className="overflow-hidden rounded-lg border border-line bg-card"><ProjectImage image={project.featuredImage} priority /></div>
+            <div data-frame="" className="overflow-hidden rounded-lg border border-line bg-card"><ProjectImage image={project.featuredImage} priority /></div>
           </Reveal>
         </div>
       </section>
@@ -46,7 +46,7 @@ export default function ProjectDetail({ project }: { project: Project }) {
       <section className="pb-20">
         <div className="wrap grid gap-6 md:grid-cols-2">
           {project.gallery.map((g) => (
-            <Reveal key={g.src}><div className="overflow-hidden rounded-lg border border-line bg-card"><ProjectImage image={g} sizes="(min-width:768px) 50vw, 100vw" /></div></Reveal>
+            <Reveal key={g.src}><div data-frame="" className="overflow-hidden rounded-lg border border-line bg-card"><ProjectImage image={g} sizes="(min-width:768px) 50vw, 100vw" /></div></Reveal>
           ))}
         </div>
       </section>
