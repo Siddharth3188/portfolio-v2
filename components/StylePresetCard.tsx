@@ -1,26 +1,28 @@
 import type { Preset } from "@/data/stylePresets";
 
-export default function StylePresetCard({ preset, selected, onSelect }: { preset: Preset; selected: boolean; onSelect: () => void }) {
+/** Preview scope: the same tokens as the live engine, so each card truly demonstrates its style. */
+export default function StylePresetCard({ preset, selected, onSelect, size = "sm", className = "" }: { preset: Preset; selected: boolean; onSelect: () => void; size?: "sm" | "lg"; className?: string }) {
   return (
     <button
       type="button"
       onClick={onSelect}
       aria-pressed={selected}
-      className={`rounded-lg border p-2 text-left transition duration-200 ${selected ? "border-fg ring-1 ring-fg" : "border-line hover:border-fg"}`}
+      className={`rounded-lg border p-2 text-left transition duration-200 ${selected ? "border-fg ring-1 ring-fg" : "border-line hover:border-fg"} ${className}`}
     >
-      <div data-sp-preview={preset.id} data-sp-accent={preset.accent} data-sp-tone={preset.tone} aria-hidden="true" className="flex h-16 flex-col justify-between rounded-md border border-line bg-bg p-2">
-        <div className="space-y-1">
-          <div className="h-1.5 w-10 rounded-full bg-fg" />
-          <div className="h-1 w-14 rounded-full bg-mute/60" />
+      <div
+        data-sp-preview={preset.id} data-sp-accent={preset.accent} data-sp-tone={preset.tone} data-sp-radius={preset.radius}
+        aria-hidden="true"
+        className={`relative flex items-center justify-between gap-3 overflow-hidden rounded-md border border-line bg-bg p-3 ${size === "lg" ? "h-36" : "h-20"}`}
+      >
+        <div data-mini="panel" className="relative z-10 flex flex-1 flex-col gap-1.5 p-2.5">
+          <span className="h-1.5 w-12 rounded-full bg-fg" />
+          <span className="h-1 w-16 rounded-full bg-mute/60" />
         </div>
-        <div className="flex items-end justify-between">
-          <div className="h-4 w-9 rounded-sm border border-line bg-card" />
-          <div className="h-2.5 w-2.5 rounded-full bg-acc" />
-        </div>
+        <span data-mini="btn" className="relative z-10 shrink-0 px-3 py-1.5 text-xs font-semibold">Button</span>
       </div>
       <div className="mt-2 flex items-center justify-between gap-2 px-0.5">
         <span className="text-sm font-semibold">{preset.label}</span>
-        {selected && <span aria-hidden="true" className="text-xs">✓</span>}
+        {selected && <span className="text-xs font-medium"><span aria-hidden="true">✓ </span>Active</span>}
       </div>
       <p className="px-0.5 text-xs leading-snug text-mute">{preset.description}</p>
     </button>
