@@ -8,8 +8,8 @@ const variants = { primary: "border-acc bg-acc text-accfg", ghost: "border-fg te
 export default function Button({ href, variant = "ghost", children, external }: Props) {
   const cls = `${base} ${variants[variant]}`;
   return external ? (
-    <a href={href} target="_blank" rel="noopener noreferrer" className={cls}>{children}</a>
+    <a href={href} data-btn={variant} target="_blank" rel="noopener noreferrer" className={cls}>{children}</a>
   ) : (
-    <Link href={href} className={cls}>{children}</Link>
+    <Link href={href} data-btn={variant} className={cls}>{children}</Link>
   );
 }
