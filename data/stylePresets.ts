@@ -22,7 +22,7 @@ export const presets: Preset[] = [
   { id: "skeuo", label: "Classic Skeuomorphism", description: "Bevelled, tactile, physical.", tone: "light", accent: "gold", surface: "default", radius: "subtle", type: "current", engine: true },
   { id: "neumorph", label: "Neumorphism", description: "Soft extruded surfaces.", tone: "light", accent: "violet", surface: "default", radius: "rounded", type: "sans", engine: true },
   { id: "glass", label: "Glassmorphism", description: "Layered translucent panels.", tone: "dark", accent: "cyan", surface: "default", radius: "rounded", type: "sans", engine: true },
-  { id: "aero", label: "Frutiger Aero", description: "Glossy sky, water and nature.", tone: "light", accent: "emerald", surface: "default", radius: "rounded", type: "sans", engine: true },
+  { id: "aero", label: "Frutiger Aero", description: "Glossy sky, water and nature.", tone: "light", accent: "cyan", surface: "default", radius: "rounded", type: "sans", engine: true },
 ];
 export const accents: { id: AccentId; label: string }[] = [
   { id: "terracotta", label: "Terracotta" }, { id: "violet", label: "Violet" }, { id: "emerald", label: "Emerald" }, { id: "cyan", label: "Cyan" }, { id: "gold", label: "Gold" },
