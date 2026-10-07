@@ -60,7 +60,7 @@ export default function ContactForm() {
       {field("type", "Website type", <select {...aria("type")} value={v.type} onChange={set("type")} className={input}>{types.map((t) => <option key={t}>{t}</option>)}</select>)}
       {field("message", "Tell me about your project", <textarea {...aria("message")} rows={5} value={v.message} onChange={set("message")} required className={input} />)}
       <div>
-        <button type="submit" disabled={status === "loading"} className="rounded-full bg-acc px-7 py-3.5 text-[14.5px] font-semibold tracking-wide text-accfg transition hover:-translate-y-0.5 disabled:opacity-60">
+        <button type="submit" data-btn="primary" disabled={status === "loading"} className="rounded-full bg-acc px-7 py-3.5 text-[14.5px] font-semibold tracking-wide text-accfg transition hover:-translate-y-0.5 disabled:opacity-60">
           {status === "loading" ? "Sending..." : "Start a conversation →"}
         </button>
       </div>
