@@ -1,9 +1,10 @@
 import SectionHeading from "@/components/SectionHeading";
 import ProcessTimeline from "@/components/ProcessTimeline";
+import StylePlayground from "@/components/StylePlayground";
 import CTASection from "@/components/CTASection";
 import { pageMeta } from "@/lib/seo";
 
-export const metadata = pageMeta("Process — Siddharth", "A realistic, collaborative process from first conversation to launch.", "/process");
+export const metadata = pageMeta("My Process — Siddharth", "A realistic, collaborative process from first conversation to launch.", "/process");
 
 export default function Process() {
   return (
@@ -14,6 +15,7 @@ export default function Process() {
           <ProcessTimeline twoCol />
         </div>
       </section>
+      <StylePlayground />
       <CTASection />
     </>
   );
