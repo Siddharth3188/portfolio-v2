@@ -22,6 +22,7 @@ export default function Home() {
           <div className="mt-10"><ProjectShowcase /></div>
         </div>
       </section>
+      <StyleShowcase />
       <section data-band="" className="bg-fg py-24 text-bg">
         <div className="wrap">
           <SectionHeading inverse title="What I Do" className="mb-10" />
@@ -40,7 +41,6 @@ export default function Home() {
           <div className="mt-8"><Button href="/process">View my process →</Button></div>
         </div>
       </section>
-      <StyleShowcase />
       <section className="border-t border-line py-24">
         <div className="wrap">
           <SectionHeading title="Hi, I'm Siddharth." description="I design and build modern websites for businesses, organizations and brands. I care about clear structure, considered typography and sites that feel fast on every device." />
