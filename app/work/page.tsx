@@ -1,9 +1,10 @@
 import SectionHeading from "@/components/SectionHeading";
 import ProjectShowcase from "@/components/ProjectShowcase";
 import CTASection from "@/components/CTASection";
+import StyleShowcase from "@/components/StyleShowcase";
 import { pageMeta } from "@/lib/seo";
 
-export const metadata = pageMeta("Work — Siddharth", "Selected website projects designed and built for different businesses, audiences and goals.", "/work");
+export const metadata = pageMeta("Selected Work — Siddharth", "Selected website projects designed and built for different businesses, audiences and goals.", "/work");
 
 export default function Work() {
   return (
@@ -15,6 +16,7 @@ export default function Work() {
         </div>
       </section>
       <CTASection />
+      <StyleShowcase />
     </>
   );
 }
