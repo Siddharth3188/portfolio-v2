@@ -19,5 +19,14 @@ export type Project = {
 };
 export type Service = { title: string; description: string; home?: boolean };
 export type ProcessStep = { title: string; description: string };
-export type ContactInformation = { email: string; whatsapp: string };
+export type SocialHandle = { handle: string; url: string };
+export type ContactInformation = {
+  email: string;
+  altEmail: string;
+  whatsapp: string; // international format, digits only
+  whatsappDisplay: string;
+  location: string;
+  instagram: SocialHandle;
+  linkedin: SocialHandle;
+};
 export type NavLink = { label: string; href: string };
