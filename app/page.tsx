@@ -22,7 +22,7 @@ export default function Home() {
           <div className="mt-10"><ProjectShowcase /></div>
         </div>
       </section>
-      <StyleShowcase />
+      <StyleShowcase spotlight />
       <section data-band="" className="bg-fg py-24 text-bg">
         <div className="wrap">
           <SectionHeading inverse title="What I Do" className="mb-10" />
