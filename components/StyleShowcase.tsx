@@ -12,13 +12,51 @@ const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 const readSeen = () => { try { return sessionStorage.getItem(SEEN_KEY) === "1"; } catch { return false; } };
 const writeSeen = () => { try { sessionStorage.setItem(SEEN_KEY, "1"); } catch { /* ignore */ } };
 
-/** Hand-pointer icon; the fingertip is at (8,2) of the 24px viewBox. */
+/** Classic pixel-art pointing hand (white fill, black outline), drawn from an ASCII map with crisp edges. X = outline, W = fill. */
+const HAND = [
+  ".....XX.........",
+  "....XWWX........",
+  "....XWWX........",
+  "....XWWX........",
+  "....XWWXXX......",
+  "....XWWXWWXXX...",
+  ".XX.XWWXWWXWWXX.",
+  "XWWXXWWWWWWWWWWX",
+  ".XWWWWWWWWWWWWWX",
+  "..XWWWWWWWWWWWWX",
+  "..XWWWWWWWWWWWX.",
+  "...XWWWWWWWWWWX.",
+  "...XWWWWWWWWWX..",
+  "....XWWWWWWWWX..",
+  "....XXXXXXXXXX..",
+];
+const PX = 2.75; // CSS px per art pixel
+const HAND_RECTS = (() => {
+  const out: { x: number; y: number; w: number; c: string }[] = [];
+  HAND.forEach((row, y) => {
+    let x = 0;
+    while (x < row.length) {
+      const c = row[x];
+      if (c === ".") { x++; continue; }
+      let w = 1;
+      while (row[x + w] === c) w++;
+      out.push({ x, y, w, c });
+      x += w;
+    }
+  });
+  return out;
+})();
 const Pointer = () => (
-  <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#111" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ filter: "drop-shadow(0 3px 4px rgba(0,0,0,.35))" }}>
-    <path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15V4a2 2 0 0 1 4 0v6.5" fill="#fff" />
-    <path d="M18 11v-1a2 2 0 0 0-2-2 2 2 0 0 0-2 2" /><path d="M14 10V9a2 2 0 0 0-2-2 2 2 0 0 0-2 2v1" />
+  <svg width={16 * PX} height={HAND.length * PX} viewBox={`0 0 16 ${HAND.length}`} shapeRendering="crispEdges" aria-hidden="true">
+    {HAND_RECTS.map((r) => <rect key={`${r.x}-${r.y}`} x={r.x} y={r.y} width={r.w} height={1} fill={r.c === "X" ? "#000" : "#fff"} />)}
   </svg>
 );
+
+/** Rounded-rect hole as an even-odd clip path over the whole viewport: a true spotlight cutout. */
+const holePath = (W: number, H: number, x: number, y: number, w: number, h: number, r: number) => {
+  const f = (n: number) => Math.round(n * 10) / 10;
+  return `path(evenodd,"M0 0H${W}V${H}H0Z M${f(x + r)} ${f(y)}H${f(x + w - r)}A${r} ${r} 0 0 1 ${f(x + w)} ${f(y + r)}V${f(y + h - r)}A${r} ${r} 0 0 1 ${f(x + w - r)} ${f(y + h)}H${f(x + r)}A${r} ${r} 0 0 1 ${f(x)} ${f(y + h - r)}V${f(y + r)}A${r} ${r} 0 0 1 ${f(x + r)} ${f(y)}Z")`;
+};
 
 /**
  * Home / Work entry point to the shared Style Playground.
@@ -31,8 +69,10 @@ export default function StyleShowcase({ spotlight = false }: { spotlight?: boole
   const [scope, animate] = useAnimate<HTMLDivElement>();
   const sectionRef = useRef<HTMLElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
+  const targetRef = useRef<HTMLDivElement>(null); // the content block that gets spotlighted
+  const overlayRef = useRef<HTMLDivElement>(null);
   const [phase, setPhase] = useState<"idle" | "active" | "done">("idle");
-  const [lit, setLit] = useState(false); // keeps the section raised while the overlay fades out
+  const [lit, setLit] = useState(false); // overlay is mounted (stays mounted while it fades out)
   const [hint, setHint] = useState<number | null>(null);
   const cards = presets.filter((p) => p.engine);
 
@@ -46,14 +86,15 @@ export default function StyleShowcase({ spotlight = false }: { spotlight?: boole
   // Start once, when the section is mostly in view, only if the visitor hasn't seen it and is still on the default style.
   useEffect(() => {
     if (!spotlight || reduce || phase !== "idle" || !isDefault(config) || readSeen()) return;
-    const el = sectionRef.current;
-    if (!el) return;
+    const grid = gridRef.current;
+    if (!grid) return;
     let timer: ReturnType<typeof setTimeout> | undefined;
     const io = new IntersectionObserver(([e]) => {
-      if (e.intersectionRatio >= 0.55) { timer ??= setTimeout(() => { setLit(true); setPhase("active"); }, 600); }
+      const need = Math.min(e.boundingClientRect.height * 0.6, window.innerHeight * 0.5);
+      if (e.intersectionRect.height >= need) { timer ??= setTimeout(() => { setLit(true); setTimeout(() => setPhase((p) => (p === "idle" ? "active" : p)), 40); }, 600); }
       else if (timer) { clearTimeout(timer); timer = undefined; }
-    }, { threshold: [0, 0.15, 0.55] });
-    io.observe(el);
+    }, { threshold: [0, 0.1, 0.25, 0.4, 0.55, 0.7, 0.85, 1] });
+    io.observe(grid);
     return () => { io.disconnect(); if (timer) clearTimeout(timer); };
   }, [spotlight, reduce, phase, config]);
 
@@ -62,15 +103,31 @@ export default function StyleShowcase({ spotlight = false }: { spotlight?: boole
     if (phase !== "active") return;
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") end(); };
     document.addEventListener("keydown", onKey);
-    const io = new IntersectionObserver(([e]) => { if (e.intersectionRatio < 0.15) end(); }, { threshold: [0.15] });
-    if (sectionRef.current) io.observe(sectionRef.current);
+    const io = new IntersectionObserver(([e]) => { if (e.intersectionRatio < 0.02) end(); }, { threshold: [0, 0.02] });
+    if (gridRef.current) io.observe(gridRef.current);
     return () => { document.removeEventListener("keydown", onKey); io.disconnect(); };
   }, [phase, end]);
 
-  // Fade the overlay out, then drop the raised stacking.
+  // Keep the cutout glued to the real position and size of the block (scroll, resize, layout shifts).
+  useEffect(() => {
+    if (!lit) return;
+    let raf = 0;
+    const tick = () => {
+      const o = overlayRef.current, t = targetRef.current;
+      if (o && t) {
+        const r = t.getBoundingClientRect(), pad = 20;
+        o.style.clipPath = holePath(document.documentElement.clientWidth, window.innerHeight, r.left - pad, r.top - pad, r.width + pad * 2, r.height + pad * 2, 22);
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    tick();
+    return () => cancelAnimationFrame(raf);
+  }, [lit]);
+
+  // Fade the overlay out, then unmount it.
   useEffect(() => {
     if (phase !== "done") return;
-    const t = setTimeout(() => setLit(false), 600);
+    const t = setTimeout(() => setLit(false), 500);
     return () => clearTimeout(t);
   }, [phase]);
 
@@ -106,11 +163,15 @@ export default function StyleShowcase({ spotlight = false }: { spotlight?: boole
 
   const active = phase === "active";
   return (
-    <section ref={sectionRef} className={`relative border-t border-line py-24 ${lit ? "z-40" : ""}`}>
-      {spotlight && (
-        <div aria-hidden="true" className={`pointer-events-none absolute inset-0 transition-opacity duration-500 ${active ? "opacity-100" : "opacity-0"}`} style={{ boxShadow: "0 0 0 100vmax rgba(6,10,18,.55)" }} />
+    <section ref={sectionRef} className="relative border-t border-line py-24">
+      {spotlight && lit && (
+        <div
+          ref={overlayRef} aria-hidden="true"
+          className={`pointer-events-none fixed inset-0 z-[35] transition-opacity duration-500 ${active ? "opacity-100" : "opacity-0"}`}
+          style={{ background: "rgba(6,10,18,.66)", backdropFilter: "blur(3px)", WebkitBackdropFilter: "blur(3px)" }}
+        />
       )}
-      <div className="wrap">
+      <div ref={targetRef} className="wrap">
         <Reveal>
           <SectionHeading eyebrow="Design system" title="Design has more than one direction." description="Explore how the same digital system can evolve across different visual languages." />
         </Reveal>
@@ -133,7 +194,7 @@ export default function StyleShowcase({ spotlight = false }: { spotlight?: boole
             {active && (
               <>
                 <span data-ripple="" aria-hidden="true" className="pointer-events-none absolute left-0 top-0 -ml-6 -mt-6 h-12 w-12 rounded-full border-2 border-acc bg-acc/20 opacity-0" />
-                <span data-pointer="" aria-hidden="true" className="pointer-events-none absolute left-0 top-0 z-10 opacity-0" style={{ marginLeft: -12, marginTop: -3 }}>
+                <span data-pointer="" aria-hidden="true" className="pointer-events-none absolute left-0 top-0 z-10 opacity-0" style={{ marginLeft: -5.5 * PX, marginTop: 0, transformOrigin: `${5.5 * PX}px 0px` }}>
                   <Pointer />
                 </span>
               </>
