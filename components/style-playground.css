@@ -181,8 +181,8 @@ html[data-sp-preset="aero"] [data-hero]::after{content:"";position:absolute;poin
  box-shadow:inset 0 -14px 26px rgba(255,255,255,.45),inset 0 0 0 2px rgba(255,255,255,.65),0 22px 44px -14px rgba(11,111,211,.6)}
 
 /* navigation: a translucent glass toolbar floating above the environment */
-html[data-sp-preset="aero"] header{top:8px;margin:8px 12px 0;border:1px solid var(--sp-nav-border);border-radius:var(--radius-xl)}
-html[data-sp-preset="aero"] header nav#mobile-menu{border-radius:0 0 var(--radius-xl) var(--radius-xl);border-top-color:rgba(255,255,255,.7)}
+html[data-sp-preset="aero"] body>header{top:8px;margin:8px 12px 0;border:1px solid var(--sp-nav-border);border-radius:var(--radius-xl)}
+html[data-sp-preset="aero"] body>header nav#mobile-menu{border-radius:0 0 var(--radius-xl) var(--radius-xl);border-top-color:rgba(255,255,255,.7)}
 
 /* buttons: glossy glass pills with a physical hover and press */
 html[data-sp-preset="aero"] [data-btn]:hover{filter:brightness(1.05);box-shadow:var(--sp-btn-hover)}
@@ -207,16 +207,25 @@ html[data-sp-preset="aero"] [data-panels]>[data-panel]::before{content:"";positi
 /* forms: glossy fields with a clear cyan focus glow */
 html[data-sp-preset="aero"] :is(input:not([type="range"]),select,textarea):focus{outline:2px solid #168DE2;outline-offset:1px;box-shadow:inset 0 2px 4px rgba(11,111,211,.28),0 0 0 4px rgba(66,184,242,.45)}
 
-/* footer: the environment continues downward, horizon -> deep blue water -> green landscape */
-html[data-sp-preset="aero"] footer{--fg:#ffffff;--mute:rgba(236,248,255,.88);color:#eef9ff;position:relative;overflow:hidden;margin-top:4rem;padding-top:6rem;padding-bottom:7.5rem;border-top:0;
- background:radial-gradient(130% 30% at 8% 112%,#2E9F45 0 50%,transparent 51%),radial-gradient(120% 34% at 92% 118%,#48B94E 0 50%,transparent 51%),radial-gradient(170% 26% at 50% 114%,#76D65C 0 54%,transparent 55%),linear-gradient(180deg,rgba(125,217,248,0) 0%,rgba(11,95,184,.92) 30%,#083f86 100%)}
+/* footer (site footer only: body>footer, so the drawer's own <footer> is never affected).
+   Sky-blue haze -> deep blue -> a rolling green hill in the style of the classic "Bliss" landscape (CSS only). */
+html[data-sp-preset="aero"] body>footer{--hill-h:clamp(64px,11vw,140px);--fg:#ffffff;--mute:rgba(236,248,255,.9);color:#eef9ff;position:relative;overflow:hidden;margin-top:3rem;padding-top:3.25rem;padding-bottom:calc(var(--hill-h) + 1.25rem);border-top:0;
+ background:radial-gradient(90% 38% at 42% 100%,rgba(150,225,250,.5),rgba(150,225,250,0) 70%),linear-gradient(180deg,rgba(125,217,248,0) 0%,rgba(11,95,184,.92) 28%,#0a4c9a 100%)}
+html[data-sp-preset="aero"] body>footer>*{position:relative;z-index:1}
+/* back hill: lighter, further away, on the right */
+html[data-sp-preset="aero"] body>footer::before{content:"";position:absolute;z-index:0;pointer-events:none;right:-20%;width:80%;height:calc(var(--hill-h)*2.6);bottom:calc(var(--hill-h)*-1.75);border-radius:50%;
+ background:radial-gradient(55% 38% at 66% 7%,rgba(214,255,170,.65),rgba(214,255,170,0) 70%),linear-gradient(180deg,#9be86a 0%,#58bd3e 52%,#2d9136 100%);box-shadow:inset 0 2px 0 rgba(240,255,210,.55)}
+/* front hill: vivid, rising from the left and dipping towards the right, with sunlit crest, tonal patches and shaded base */
+html[data-sp-preset="aero"] body>footer::after{content:"";position:absolute;z-index:0;pointer-events:none;left:-14%;width:94%;height:calc(var(--hill-h)*3);bottom:calc(var(--hill-h)*-2.05);border-radius:50%;transform:rotate(-3deg);
+ background:radial-gradient(58% 30% at 30% 5%,rgba(222,255,160,.8),rgba(222,255,160,0) 70%),radial-gradient(36% 18% at 66% 24%,rgba(120,222,72,.55),rgba(120,222,72,0) 70%),radial-gradient(70% 34% at 50% 100%,rgba(8,84,40,.6),rgba(8,84,40,0) 72%),linear-gradient(180deg,#7fe24c 0%,#45b230 38%,#1f8a2a 100%);
+ box-shadow:inset 0 3px 0 rgba(232,255,196,.6),inset 0 12px 24px rgba(190,255,130,.32)}
 
 /* environment layers: drifting clouds (body::before, via --sp-deco) and floating bubbles (body::after) */
 html[data-sp-preset="aero"] body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:var(--sp-bubbles,none)}
 @media (max-width:640px){
- html[data-sp-preset="aero"] header{top:6px;margin:6px 8px 0}
+ html[data-sp-preset="aero"] body>header{top:6px;margin:6px 8px 0}
  html[data-sp-preset="aero"] [data-hero]::after{width:84px;right:4%;top:5%}
- html[data-sp-preset="aero"] footer{padding-top:4.5rem;padding-bottom:6rem}
+ html[data-sp-preset="aero"] body>footer{padding-top:2.5rem}
 }
 @media (prefers-reduced-motion:no-preference){
  @keyframes sp-aero-drift{from{transform:translateX(-2.5%)}to{transform:translateX(2.5%)}}
