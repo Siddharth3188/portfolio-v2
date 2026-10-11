@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import StyleProvider from "@/components/StyleProvider";
 import { site } from "@/data/site";
-import { BOOT_SCRIPT } from "@/data/stylePresets";
+import { BOOT_SCRIPT, DEFAULT_ATTRS } from "@/data/stylePresets";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -19,7 +19,7 @@ export const viewport: Viewport = { width: "device-width", initialScale: 1, view
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning {...DEFAULT_ATTRS}>
       <head><script dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} /></head>
       <body>
         <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:bg-fg focus:px-4 focus:py-2 focus:text-bg">Skip to content</a>
