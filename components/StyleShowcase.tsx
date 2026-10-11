@@ -74,7 +74,7 @@ export default function StyleShowcase({ spotlight = false }: { spotlight?: boole
   const [phase, setPhase] = useState<"idle" | "active" | "done">("idle");
   const [lit, setLit] = useState(false); // overlay is mounted (stays mounted while it fades out)
   const [hint, setHint] = useState<number | null>(null);
-  const cards = presets.filter((p) => p.engine);
+  const cards = presets; // all five themes, default first
 
   // Any interaction (or Escape / scrolling away) permanently retires the intro for this session.
   const end = useCallback(() => {
@@ -182,7 +182,7 @@ export default function StyleShowcase({ spotlight = false }: { spotlight?: boole
           <div ref={scope} className="relative">
             <div
               ref={gridRef}
-              className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+              className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5"
               onPointerEnter={end} onPointerDown={end} onFocusCapture={end}
             >
               {cards.map((p, i) => (
