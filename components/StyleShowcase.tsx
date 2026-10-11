@@ -76,7 +76,8 @@ export default function StyleShowcase({ spotlight = false }: { spotlight?: boole
   const [hint, setHint] = useState<number | null>(null);
   const cards = presets; // all five themes, default first
 
-  // Any interaction (or Escape / scrolling away) permanently retires the intro for this session.
+  // Retires the intro for this session. Called only from an explicit choice (card click / Explore button), Escape or Skip.
+  // Scrolling, resizing, hovering, focusing and pointer movement never end it.
   const end = useCallback(() => {
     writeSeen();
     setPhase("done");
@@ -98,14 +99,12 @@ export default function StyleShowcase({ spotlight = false }: { spotlight?: boole
     return () => { io.disconnect(); if (timer) clearTimeout(timer); };
   }, [spotlight, reduce, phase, config]);
 
-  // While active: end on Escape or when the section scrolls out of view. Never blocks anything.
+  // While active the only keyboard dismissal is Escape.
   useEffect(() => {
     if (phase !== "active") return;
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") end(); };
     document.addEventListener("keydown", onKey);
-    const io = new IntersectionObserver(([e]) => { if (e.intersectionRatio < 0.02) end(); }, { threshold: [0, 0.02] });
-    if (gridRef.current) io.observe(gridRef.current);
-    return () => { document.removeEventListener("keydown", onKey); io.disconnect(); };
+    return () => document.removeEventListener("keydown", onKey);
   }, [phase, end]);
 
   // Keep the cutout glued to the real position and size of the block (scroll, resize, layout shifts).
@@ -131,12 +130,13 @@ export default function StyleShowcase({ spotlight = false }: { spotlight?: boole
     return () => clearTimeout(t);
   }, [phase]);
 
-  // The pointer loop: glide to a card, press, release, fade; repeat across the cards a few times.
+  // The pointer loop is decorative only: glide to a card, press, release, fade, repeat. It never controls the overlay.
   useEffect(() => {
     if (phase !== "active") return;
     let cancelled = false;
     (async () => {
       await sleep(500);
+      while (!cancelled) {
       for (let i = 0; i < cards.length && !cancelled; i++) {
         const grid = gridRef.current, card = grid?.children[i] as HTMLElement | undefined;
         if (!grid || !card) break;
@@ -156,14 +156,20 @@ export default function StyleShowcase({ spotlight = false }: { spotlight?: boole
         setHint(null);
         await sleep(900);
       }
-      if (!cancelled) end();
+      await sleep(2600);
+      }
     })();
     return () => { cancelled = true; };
-  }, [phase, cards.length, animate, end]);
+  }, [phase, cards.length, animate]);
 
   const active = phase === "active";
   return (
     <section ref={sectionRef} className="relative border-t border-line py-24">
+      {spotlight && lit && active && (
+        <button type="button" onClick={end} className="fixed bottom-4 left-1/2 z-[36] -translate-x-1/2 rounded-full border border-white/40 bg-black/70 px-4 py-2 text-sm font-medium text-white shadow-lg backdrop-blur-sm">
+          Skip tour <span className="sr-only">(or press Escape)</span>
+        </button>
+      )}
       {spotlight && lit && (
         <div
           ref={overlayRef} aria-hidden="true"
@@ -183,11 +189,10 @@ export default function StyleShowcase({ spotlight = false }: { spotlight?: boole
             <div
               ref={gridRef}
               className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5"
-              onPointerEnter={end} onPointerDown={end} onFocusCapture={end}
             >
               {cards.map((p, i) => (
                 <div key={p.id} className={`h-full transition duration-300 hover:-translate-y-1 [&_button]:h-full [&_button]:w-full [&_button]:cursor-pointer ${hint === i ? "-translate-y-1 [&_button]:ring-2 [&_button]:ring-acc" : ""}`}>
-                  <StylePresetCard size="lg" preset={p} selected={config.preset === p.id} onSelect={() => { setConfig(withPreset(p.id)); openDrawer(); }} />
+                  <StylePresetCard size="lg" preset={p} selected={config.preset === p.id} onSelect={() => { end(); setConfig(withPreset(p.id)); openDrawer(); }} />
                 </div>
               ))}
             </div>
@@ -201,7 +206,7 @@ export default function StyleShowcase({ spotlight = false }: { spotlight?: boole
             )}
           </div>
           <div className="mt-8">
-            <button type="button" data-btn="primary" onClick={openDrawer} aria-haspopup="dialog" className="inline-flex items-center justify-center rounded-full border border-acc bg-acc px-6 py-3.5 text-[14.5px] font-semibold tracking-wide text-accfg transition duration-300 hover:-translate-y-0.5">Explore visual styles →</button>
+            <button type="button" data-btn="primary" onClick={() => { end(); openDrawer(); }} aria-haspopup="dialog" className="inline-flex items-center justify-center rounded-full border border-acc bg-acc px-6 py-3.5 text-[14.5px] font-semibold tracking-wide text-accfg transition duration-300 hover:-translate-y-0.5">Explore visual styles →</button>
           </div>
         </Reveal>
       </div>
