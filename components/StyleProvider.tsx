@@ -15,7 +15,7 @@ export function useStyle(): Ctx {
 
 function applyAttrs(config: StyleConfig) {
   const el = document.documentElement;
-  const attrs = isDefault(config) ? {} : toAttrs(config);
+  const attrs = toAttrs(config);
   ATTR_KEYS.forEach((k) => (k in attrs ? el.setAttribute(k, attrs[k]) : el.removeAttribute(k)));
 }
 function persist(config: StyleConfig) {
