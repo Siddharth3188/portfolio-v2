@@ -43,9 +43,9 @@ export default function About() {
             <dl>
               {details.map(([label, value]) => (
                 <Reveal key={label}>
-                  <div data-row="" className="grid grid-cols-[110px_1fr] items-baseline gap-4 border-t border-line py-4">
+                  <div data-row="" className="grid grid-cols-1 gap-1 border-t border-line py-4 sm:grid-cols-[110px_minmax(0,1fr)] sm:items-baseline sm:gap-4">
                     <dt className="text-sm text-mute">{label}</dt>
-                    <dd className="m-0 break-words">{value}</dd>
+                    <dd className="m-0 min-w-0 break-words [overflow-wrap:anywhere]">{value}</dd>
                   </div>
                 </Reveal>
               ))}
