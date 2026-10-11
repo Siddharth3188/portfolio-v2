@@ -1,4 +1,4 @@
-import type { Preset } from "@/data/stylePresets";
+import { DEFAULT_PRESET, type Preset } from "@/data/stylePresets";
 
 /** Preview scope: the same tokens as the live engine, so each card truly demonstrates its style. */
 export default function StylePresetCard({ preset, selected, onSelect, size = "sm", className = "" }: { preset: Preset; selected: boolean; onSelect: () => void; size?: "sm" | "lg"; className?: string }) {
@@ -21,7 +21,10 @@ export default function StylePresetCard({ preset, selected, onSelect, size = "sm
         <span data-mini="btn" className="relative z-10 shrink-0 px-3 py-1.5 text-xs font-semibold">Button</span>
       </div>
       <div className="mt-2 flex items-center justify-between gap-2 px-0.5">
-        <span className="text-sm font-semibold">{preset.label}</span>
+        <span className="flex flex-wrap items-center gap-1.5 text-sm font-semibold">
+          {preset.label}
+          {preset.id === DEFAULT_PRESET && <span className="rounded-full border border-line px-1.5 text-xs font-medium text-mute">Default</span>}
+        </span>
         {selected && <span className="text-xs font-medium"><span aria-hidden="true">✓ </span>Active</span>}
       </div>
       <p className="px-0.5 text-xs leading-snug text-mute">{preset.description}</p>
