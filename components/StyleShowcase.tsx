@@ -151,6 +151,33 @@ export default function StyleShowcase({ spotlight = false }: { spotlight?: boole
     };
   }, [phase, open, reduce]);
 
+  // Onboarding gate. While the tour is active only the theme controls work:
+  //  - everything else on the page is made `inert` (not focusable, not clickable, hidden from assistive tech), so keyboard
+  //    focus can never land on a control that does nothing; and
+  //  - clicks / middle-clicks / form submits on any other interactive element are cancelled in the capture phase, so no
+  //    navigation or action can fire even if something slips past `inert`.
+  // Scrolling is untouched. Everything is restored the moment the tour ends.
+  useEffect(() => {
+    if (phase !== "active") return;
+    const section = sectionRef.current;
+    const inerted: Element[] = [];
+    document.querySelectorAll("body > a, body > header, body > footer, main > *").forEach((el) => {
+      if (section && (el === section || el.contains(section))) return;
+      if (!el.hasAttribute("inert")) { el.setAttribute("inert", ""); inerted.push(el); }
+    });
+    const guard = (e: Event) => {
+      const t = e.target;
+      if (!(t instanceof Element) || t.closest("[data-tour-allow],[data-sp-drawer]")) return;
+      if (t.closest("a,button,[role='button'],input,select,textarea,summary,label,form")) { e.preventDefault(); e.stopPropagation(); }
+    };
+    const events = ["click", "auxclick", "submit"] as const;
+    events.forEach((ev) => document.addEventListener(ev, guard, true));
+    return () => {
+      events.forEach((ev) => document.removeEventListener(ev, guard, true));
+      inerted.forEach((el) => el.removeAttribute("inert"));
+    };
+  }, [phase]);
+
   // Keep the cutout glued to the real position and size of the block (scroll, resize, layout shifts).
   useEffect(() => {
     if (!lit) return;
@@ -211,7 +238,7 @@ export default function StyleShowcase({ spotlight = false }: { spotlight?: boole
     <section ref={sectionRef} className="relative border-t border-line py-24">
       {spotlight && lit && active && !open && (
         <button
-          type="button"
+          type="button" data-tour-allow=""
           onClick={() => { guideRef.current?.(); gridRef.current?.querySelector<HTMLButtonElement>("button")?.focus({ preventScroll: true }); }}
           className="fixed bottom-4 left-1/2 z-[36] -translate-x-1/2 rounded-full border border-white/40 bg-black/70 px-5 py-2.5 text-sm font-semibold text-white shadow-lg backdrop-blur-sm"
         >
@@ -225,7 +252,7 @@ export default function StyleShowcase({ spotlight = false }: { spotlight?: boole
           style={{ background: "rgba(6,10,18,.66)", backdropFilter: "blur(3px)", WebkitBackdropFilter: "blur(3px)" }}
         />
       )}
-      <div ref={targetRef} className="wrap">
+      <div ref={targetRef} data-tour-allow="" className="wrap">
         <Reveal>
           <SectionHeading eyebrow="Design system" title="Design has more than one direction." description="Explore how the same digital system can evolve across different visual languages." />
         </Reveal>
