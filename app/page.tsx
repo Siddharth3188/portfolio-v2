@@ -12,6 +12,12 @@ import { pageMeta } from "@/lib/seo";
 
 export const metadata = pageMeta(site.title, site.description, "/");
 
+/** Home-page previews only, shown below the md breakpoint. Full descriptions stay in data/projects.ts for desktop, Work and detail pages. */
+const homeMobileDescriptions: Record<string, string> = {
+  bytezone: "PC builds, repairs and upgrades for everyday computing and gaming.",
+  "sakthi-sudar-foundation": "A community-focused website presenting the foundation's programs and activities.",
+};
+
 export default function Home() {
   return (
     <>
@@ -19,7 +25,7 @@ export default function Home() {
       <section className="py-20">
         <div className="wrap">
           <SectionHeading title="Selected Work" description="A selection of websites designed and built for different kinds of businesses and organizations." />
-          <div className="mt-10"><ProjectShowcase /></div>
+          <div className="mt-10"><ProjectShowcase mobileDescriptions={homeMobileDescriptions} equalHeightMobile /></div>
         </div>
       </section>
       <StyleShowcase spotlight />
