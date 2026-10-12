@@ -208,18 +208,23 @@ html[data-sp-preset="aero"] [data-panels]>[data-panel]::before{content:"";positi
 html[data-sp-preset="aero"] :is(input:not([type="range"]),select,textarea):focus{outline:2px solid #168DE2;outline-offset:1px;box-shadow:inset 0 2px 4px rgba(11,111,211,.28),0 0 0 4px rgba(66,184,242,.45)}
 
 /* footer (site footer only: body>footer, so the drawer's own <footer> is never affected).
-   Blue sky haze above a stylised countryside: local SVGs (rolling hills, wind turbines, barn, trees) anchored to the bottom.
-   Two compositions: desktop/tablet (>=560px) and a purpose-drawn mobile one (<560px). Text sits in the reserved space above. */
-html[data-sp-preset="aero"] body>footer{--land-w:min(100vw,1800px);--land-h:calc(var(--land-w)*210/1440);--fg:#ffffff;--mute:rgba(236,248,255,.9);color:#eef9ff;position:relative;overflow:hidden;margin-top:3rem;padding-top:3.25rem;padding-bottom:calc(var(--land-h) + 1rem);border-top:0;
- background:radial-gradient(90% 38% at 42% 100%,rgba(150,225,250,.5),rgba(150,225,250,0) 70%),linear-gradient(180deg,rgba(125,217,248,0) 0%,rgba(11,95,184,.92) 28%,#0a4c9a 100%)}
+   A layered countryside, all local assets, anchored to the bottom and kept below the footer text:
+     footer background  = drifting-cloud sky (animated SVG)
+     footer::before     = painted landscape (WebP): rolling hills, patchwork fields, barn, trees, foreground meadow
+     footer::after      = animated overlay (SVG): turbine blades rotating about their hubs + a breeze through the foreground grass
+   Two compositions: desktop/tablet (>=560px) and a purpose-composed mobile one (<560px). Motion is disabled inside the SVGs for
+   prefers-reduced-motion, leaving a still scene. */
+html[data-sp-preset="aero"] body>footer{--land-w:min(100vw,2200px);--land-h:calc(var(--land-w)*210/1440);--land-ratio:1440/210;
+ --land-sky:url(/images/footer/landscape-desktop-sky.svg);--land-base:url(/images/footer/landscape-desktop-base.webp);--land-anim:url(/images/footer/landscape-desktop-anim.svg);
+ --fg:#ffffff;--mute:rgba(236,248,255,.9);color:#eef9ff;position:relative;overflow:hidden;margin-top:3rem;padding-top:3.25rem;padding-bottom:calc(var(--land-h) + 1rem);border-top:0;
+ background:var(--land-sky) center bottom/var(--land-w) var(--land-h) no-repeat,radial-gradient(90% 38% at 42% 100%,rgba(150,225,250,.5),rgba(150,225,250,0) 70%),linear-gradient(180deg,rgba(125,217,248,0) 0%,rgba(11,95,184,.92) 28%,#0a4c9a 100%)}
 html[data-sp-preset="aero"] body>footer>*{position:relative;z-index:1}
-/* ground band: keeps the green continuous on screens wider than the 1800px scene */
-html[data-sp-preset="aero"] body>footer::before{content:"";position:absolute;z-index:0;pointer-events:none;left:0;right:0;bottom:0;height:calc(var(--land-h)*.13);background:linear-gradient(180deg,#5cc23c,#2f9a2f 60%,#1f8a2a)}
-html[data-sp-preset="aero"] body>footer::after{content:"";position:absolute;z-index:0;pointer-events:none;left:50%;bottom:0;width:var(--land-w);aspect-ratio:1440/210;transform:translateX(-50%);background:url(/images/footer/landscape-desktop.svg) center bottom/100% 100% no-repeat}
+html[data-sp-preset="aero"] body>footer::before,html[data-sp-preset="aero"] body>footer::after{content:"";position:absolute;z-index:0;pointer-events:none;left:50%;bottom:0;width:var(--land-w);aspect-ratio:var(--land-ratio);transform:translateX(-50%);background-position:center bottom;background-size:100% 100%;background-repeat:no-repeat}
+html[data-sp-preset="aero"] body>footer::before{background-image:var(--land-base)}
+html[data-sp-preset="aero"] body>footer::after{background-image:var(--land-anim)}
 @media (max-width:559px){
- html[data-sp-preset="aero"] body>footer{--land-w:100vw;--land-h:calc(100vw*150/400)}
- html[data-sp-preset="aero"] body>footer::before{display:none}
- html[data-sp-preset="aero"] body>footer::after{aspect-ratio:400/150;background-image:url(/images/footer/landscape-mobile.svg)}
+ html[data-sp-preset="aero"] body>footer{--land-w:100vw;--land-h:calc(100vw*150/400);--land-ratio:400/150;
+  --land-sky:url(/images/footer/landscape-mobile-sky.svg);--land-base:url(/images/footer/landscape-mobile-base.webp);--land-anim:url(/images/footer/landscape-mobile-anim.svg)}
 }
 
 /* environment layers: drifting clouds (body::before, via --sp-deco) and floating bubbles (body::after) */
