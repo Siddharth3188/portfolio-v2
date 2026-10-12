@@ -8,6 +8,7 @@ import { useStyle } from "./StyleProvider";
 import { isDefault, presets, withPreset } from "@/data/stylePresets";
 
 const SEEN_KEY = "sp:intro-seen";
+const HEADER_OFFSET = 88; // sticky navbar + breathing room
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 const readSeen = () => { try { return sessionStorage.getItem(SEEN_KEY) === "1"; } catch { return false; } };
 const writeSeen = () => { try { sessionStorage.setItem(SEEN_KEY, "1"); } catch { /* ignore */ } };
@@ -64,7 +65,7 @@ const holePath = (W: number, H: number, x: number, y: number, w: number, h: numb
  * while the rest of the page is softly dimmed. The overlay never captures pointer events, scrolling or focus.
  */
 export default function StyleShowcase({ spotlight = false }: { spotlight?: boolean }) {
-  const { config, setConfig, openDrawer } = useStyle();
+  const { config, setConfig, open, openDrawer } = useStyle();
   const reduce = useReducedMotion();
   const [scope, animate] = useAnimate<HTMLDivElement>();
   const sectionRef = useRef<HTMLElement>(null);
@@ -74,9 +75,10 @@ export default function StyleShowcase({ spotlight = false }: { spotlight?: boole
   const [phase, setPhase] = useState<"idle" | "active" | "done">("idle");
   const [lit, setLit] = useState(false); // overlay is mounted (stays mounted while it fades out)
   const [hint, setHint] = useState<number | null>(null);
+  const guideRef = useRef<(() => void) | null>(null); // scrolls the spotlighted block back into view
   const cards = presets; // all five themes, default first
 
-  // Retires the intro for this session. Called only from an explicit choice (card click / Explore button), Escape or Skip.
+  // Retires the intro for this session. It ends only when a theme is actually chosen (a card click, or any theme change).
   // Scrolling, resizing, hovering, focusing and pointer movement never end it.
   const end = useCallback(() => {
     writeSeen();
@@ -99,13 +101,55 @@ export default function StyleShowcase({ spotlight = false }: { spotlight?: boole
     return () => { io.disconnect(); if (timer) clearTimeout(timer); };
   }, [spotlight, reduce, phase, config]);
 
-  // While active the only keyboard dismissal is Escape.
+  // Choosing a theme anywhere (e.g. inside the Style Playground) completes the tour.
+  useEffect(() => { if (phase === "active") end(); }, [config]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Guidance: if the visitor scrolls (wheel, touch, keys) or resizes so the block is mostly out of view, ease them back
+  // once scrolling has settled. Debounced, never during a touch, and never while a guided scroll is still running.
   useEffect(() => {
-    if (phase !== "active") return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") end(); };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [phase, end]);
+    if (phase !== "active" || open) return;
+    let timer: ReturnType<typeof setTimeout> | undefined, guard: ReturnType<typeof setTimeout> | undefined;
+    let guiding = false, touching = false;
+    const guide = () => {
+      const t = targetRef.current, g = gridRef.current;
+      if (!t || !g) return;
+      const vh = window.innerHeight, tr = t.getBoundingClientRect();
+      const delta = tr.height <= vh - HEADER_OFFSET - 24
+        ? tr.top - (HEADER_OFFSET + (vh - HEADER_OFFSET - tr.height) / 2) // short block: centre it
+        : g.getBoundingClientRect().top - (HEADER_OFFSET + 72);          // tall block (mobile): keep the cards at the top
+      if (Math.abs(delta) < 8) return;
+      guiding = true;
+      window.scrollBy({ top: delta, behavior: reduce ? "auto" : "smooth" });
+      clearTimeout(guard);
+      guard = setTimeout(() => { guiding = false; }, 1100);
+    };
+    guideRef.current = guide;
+    const check = () => {
+      if (guiding || touching) return;
+      const t = targetRef.current;
+      if (!t) return;
+      const r = t.getBoundingClientRect(), vh = window.innerHeight;
+      const visible = Math.max(0, Math.min(r.bottom, vh) - Math.max(r.top, HEADER_OFFSET));
+      if (visible < Math.min(r.height, vh - HEADER_OFFSET) * 0.4) guide();
+    };
+    const schedule = () => { clearTimeout(timer); timer = setTimeout(check, 450); };
+    const down = () => { touching = true; };
+    const up = () => { touching = false; schedule(); };
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    window.addEventListener("touchstart", down, { passive: true });
+    window.addEventListener("touchend", up, { passive: true });
+    window.addEventListener("touchcancel", up, { passive: true });
+    return () => {
+      guideRef.current = null;
+      clearTimeout(timer); clearTimeout(guard);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      window.removeEventListener("touchstart", down);
+      window.removeEventListener("touchend", up);
+      window.removeEventListener("touchcancel", up);
+    };
+  }, [phase, open, reduce]);
 
   // Keep the cutout glued to the real position and size of the block (scroll, resize, layout shifts).
   useEffect(() => {
@@ -165,15 +209,19 @@ export default function StyleShowcase({ spotlight = false }: { spotlight?: boole
   const active = phase === "active";
   return (
     <section ref={sectionRef} className="relative border-t border-line py-24">
-      {spotlight && lit && active && (
-        <button type="button" onClick={end} className="fixed bottom-4 left-1/2 z-[36] -translate-x-1/2 rounded-full border border-white/40 bg-black/70 px-4 py-2 text-sm font-medium text-white shadow-lg backdrop-blur-sm">
-          Skip tour <span className="sr-only">(or press Escape)</span>
+      {spotlight && lit && active && !open && (
+        <button
+          type="button"
+          onClick={() => { guideRef.current?.(); gridRef.current?.querySelector<HTMLButtonElement>("button")?.focus({ preventScroll: true }); }}
+          className="fixed bottom-4 left-1/2 z-[36] -translate-x-1/2 rounded-full border border-white/40 bg-black/70 px-5 py-2.5 text-sm font-semibold text-white shadow-lg backdrop-blur-sm"
+        >
+          Try theme
         </button>
       )}
       {spotlight && lit && (
         <div
           ref={overlayRef} aria-hidden="true"
-          className={`pointer-events-none fixed inset-0 z-[35] transition-opacity duration-500 ${active ? "opacity-100" : "opacity-0"}`}
+          className={`pointer-events-none fixed inset-0 z-[35] transition-opacity duration-500 ${active && !open ? "opacity-100" : "opacity-0"}`}
           style={{ background: "rgba(6,10,18,.66)", backdropFilter: "blur(3px)", WebkitBackdropFilter: "blur(3px)" }}
         />
       )}
@@ -206,7 +254,7 @@ export default function StyleShowcase({ spotlight = false }: { spotlight?: boole
             )}
           </div>
           <div className="mt-8">
-            <button type="button" data-btn="primary" onClick={() => { end(); openDrawer(); }} aria-haspopup="dialog" className="inline-flex items-center justify-center rounded-full border border-acc bg-acc px-6 py-3.5 text-[14.5px] font-semibold tracking-wide text-accfg transition duration-300 hover:-translate-y-0.5">Explore visual styles →</button>
+            <button type="button" data-btn="primary" onClick={openDrawer} aria-haspopup="dialog" className="inline-flex items-center justify-center rounded-full border border-acc bg-acc px-6 py-3.5 text-[14.5px] font-semibold tracking-wide text-accfg transition duration-300 hover:-translate-y-0.5">Explore visual styles →</button>
           </div>
         </Reveal>
       </div>
